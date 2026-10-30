@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from app import APP
+from app.api import APP
 from datetime import datetime
 
 CLIENT = TestClient(APP)
@@ -71,7 +71,7 @@ def test_tarefas_get_id():
     assert resposta.json() == {"mensagem": "Tarefa não existe"}
 
 # 5. Implementar um teste unitário para a rota /tarefas/{id} (DELETE)
-def teste_tarefas_delete():
+def test_tarefas_delete():
     resposta = CLIENT.delete("/tarefas/1")
     assert resposta.json() == {"mensagem": "Tarefa não existe"}
 
@@ -80,3 +80,9 @@ def teste_tarefas_delete():
 
     resposta = CLIENT.get("/tarefas")
     assert resposta.json() == []
+
+def test_autor():
+    resposta = CLIENT.get("/autor")
+
+    assert resposta.status_code == 200
+    assert resposta.json() == {"mensagem": "Pedro Rocha Horchulhack"}

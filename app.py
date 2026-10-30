@@ -6,7 +6,7 @@ APP = FastAPI()
 TAREFAS = []
 
 # Estrutura da tarefa
-"""
+""" 
 {
     "id" -> int,
     "titulo" -> str,
@@ -22,7 +22,7 @@ def criar_tarefa(titulo, descricao):
         "titulo": titulo,
         "descricao": descricao,
         "concluida": False,
-        "criada_em": datetime.now()
+        "criada_em": datetime.now().isoformat(timespec="seconds")
     }
 
 # GET /tarefas: Lista todas as tarefas (somente id e titulo)
@@ -39,7 +39,7 @@ async def tarefas():
     return lista_somente_id_titulo
 
 # POST /tarefas: Cria tarefa
-@APP.post("/tarefas")
+@APP.post("/tarefas", status_code=201)
 async def post_tarefa(titulo: str, descricao: str):
     global TAREFAS
 
@@ -69,18 +69,19 @@ async def concluir_tarefa(id: int):
     # 2. Marcar a tarefa como concluída
     # 3. Você deve armazenar o horário de conclusão da tarefa
     # 4. Caso a tarefa não exista, você tem que mostrar que a tarefa não existe
-    
     for tarefa in TAREFAS:
         if id == int(tarefa['id']) and tarefa['concluida'] == False:
             tarefa['concluida'] = True
-            tarefa['concluida_em'] = datetime.now()
+            tarefa['concluida_em'] = datetime.now().isoformat(timespec='seconds')
             titulo = tarefa['titulo']
-            
-            resp = requests.post(f"http://localhost:8000/notificar?id={id}&titulo={titulo}")
 
-            print(resp.json())
+            try:
+                resp = requests.post(f"http://localhost:8000/notificar?id={id}&titulo={titulo}")
+
+                print(resp)
+            except Exception as e:
+                print(e)               
             return {"mensagem": "Tarefa atualizada"}
-    
     return {"mensagem": "Tarefa não existe"}
 
 # DELETE /tarefas/{id}: Exclui tarefa
@@ -100,7 +101,6 @@ async def apagar_tarefa(id: int):
         indice += 1
     
     return {"mensagem": "Tarefa não existe"}
-
 @APP.get("/")
 async def index():
     return {"mensagem": "Olá, mundo!"}

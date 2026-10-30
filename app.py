@@ -117,3 +117,17 @@ async def apagar_tarefa(id_tarefa: int):
 async def index():
     """ Rota raíz. """
     return {"mensagem": "Olá, mundo!"}
+
+# 1. Implementar uma rota chamada "/autor" que retorna
+# um dicionário no formato {"mensagem": SEU NOME COMPLETO}
+@APP.get("/autor")
+async def autor():
+    """ Rota para retornar o autor da aplicação """
+    return {"mensagem": "Pedro Rocha Horchulhack"}
+
+# 2. Criar um teste unitário para verificar se a rota
+# está produzindo o resultado esperado
+
+# 3. Verificar se o código está no padrão do PyLint
+
+# 4. Enviar o código para o repositório (git push)

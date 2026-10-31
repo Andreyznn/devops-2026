@@ -7,7 +7,8 @@ from typing import Annotated
 import requests
 from fastapi import FastAPI, Depends
 from requests.exceptions import RequestException
-from sqlmodel import SQLModel, Session, col, create_engine, select
+from sqlalchemy import false
+from sqlmodel import SQLModel, Session, create_engine, select
 
 from .modelo import Tarefa
 
@@ -78,7 +79,7 @@ async def concluir_tarefa(sessao: SESSAO, id_tarefa: int):
     # select * from tarefa where id = id_tarefa and concluida = false
     regra = select(Tarefa).where(
         Tarefa.id == id_tarefa,
-        col(Tarefa.concluida).is_(False),
+        Tarefa.concluida == false(),
     )
     tarefa = sessao.exec(regra).first()
 

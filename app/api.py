@@ -7,7 +7,7 @@ from typing import Annotated
 import requests
 from fastapi import FastAPI, Depends
 from requests.exceptions import RequestException
-from sqlmodel import SQLModel, Session, create_engine, select
+from sqlmodel import SQLModel, Session, col, create_engine, select
 
 from .modelo import Tarefa
 
@@ -52,6 +52,7 @@ async def post_tarefa(sessao: SESSAO, titulo: str, descricao: str | None = None)
 
     sessao.add(tarefa_nova)
     sessao.commit()
+    sessao.refresh(tarefa_nova)
 
     return {"mensagem": "OK"}
 
@@ -60,7 +61,9 @@ async def post_tarefa(sessao: SESSAO, titulo: str, descricao: str | None = None)
 @APP.get("/tarefas/{id_tarefa}")
 async def tarefa_especifica(sessao: SESSAO, id_tarefa: int):
     """Rota para visualizar uma tarefa específica."""
-    tarefa = sessao.get(Tarefa, id_tarefa)
+    # select * from tarefa where id = id_tarefa
+    regra = select(Tarefa).where(Tarefa.id == id_tarefa)
+    tarefa = sessao.exec(regra).first()
 
     if tarefa is None:
         return {"mensagem": "Tarefa não existe"}
@@ -72,19 +75,25 @@ async def tarefa_especifica(sessao: SESSAO, id_tarefa: int):
 @APP.put("/tarefas/{id_tarefa}")
 async def concluir_tarefa(sessao: SESSAO, id_tarefa: int):
     """Rota para concluir uma tarefa."""
-    tarefa = sessao.get(Tarefa, id_tarefa)
+    # select * from tarefa where id = id_tarefa and concluida = false
+    regra = select(Tarefa).where(
+        Tarefa.id == id_tarefa,
+        col(Tarefa.concluida).is_(False),
+    )
+    tarefa = sessao.exec(regra).first()
 
-    if tarefa is None or tarefa.concluida:
+    if tarefa is None:
         return {"mensagem": "Tarefa não existe"}
 
     tarefa.finalizar()
     sessao.add(tarefa)
     sessao.commit()
+    sessao.refresh(tarefa)
 
     try:
         requests.post(
             "http://localhost:8000/notificar",
-            params={"id": id_tarefa, "titulo": tarefa.titulo},
+            params={"id": tarefa.id, "titulo": tarefa.titulo},
             timeout=1,
         )
     except RequestException as erro:
@@ -97,10 +106,26 @@ async def concluir_tarefa(sessao: SESSAO, id_tarefa: int):
 @APP.delete("/tarefas/{id_tarefa}")
 async def apagar_tarefa(sessao: SESSAO, id_tarefa: int):
     """Rota para apagar tarefa."""
-    tarefa = sessao.get(Tarefa, id_tarefa)
+    regra = select(Tarefa).where(Tarefa.id == id_tarefa)
+    tarefa = sessao.exec(regra).first()
 
     if tarefa is None:
         return {"mensagem": "Tarefa não existe"}
 
     sessao.delete(tarefa)
     sessao.commit()
+
+    return {"mensagem": "Tarefa apagada"}
+
+
+@APP.get("/")
+async def index():
+    """Rota raiz."""
+    return {"mensagem": "Olá, mundo!"}
+
+
+# Rota "/autor" que retorna {"mensagem": NOME COMPLETO}
+@APP.get("/autor")
+async def autor():
+    """Rota para retornar o autor da aplicação."""
+    return {"mensagem": "Andrey Favarim"}

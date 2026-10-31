@@ -28,7 +28,7 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with pyLint
       run: |
-        pylint app.py
+        pylint app
     - name: Test with pytest
       run: |
         pytest

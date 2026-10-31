@@ -4,3 +4,7 @@ pytest
 pytest-cov
 pylint
 bandit
+ruff
+sqlmodel
+sqlalchemy
+pymysql

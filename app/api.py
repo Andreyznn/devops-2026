@@ -30,8 +30,8 @@ DATABASE_ADDRESS = ler_variavel("DATABASE_ADDRESS")
 DATABASE = ler_variavel("DATABASE")
 
 URL_BANCO = (
-    f"mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}"
-    f"@{DATABASE_ADDRESS}:3306/{DATABASE}"
+    f"postgresql+psycopg://{DATABASE_USERNAME}:{DATABASE_PASSWORD}"
+    f"@{DATABASE_ADDRESS}/{DATABASE}"
 )
 ENGINE = create_engine(URL_BANCO)
 

@@ -3,6 +3,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Annotated
+import os
 
 import requests
 from fastapi import FastAPI, Depends
@@ -12,7 +13,28 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from .modelo import Tarefa
 
-ENGINE = create_engine("sqlite:///banco.db", connect_args={"check_same_thread": False})
+DATABASE_USERNAME = os.environ.get("DATABASE_USERNAME")
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
+DATABASE_ADDRESS = os.environ.get("DATABASE_ADDRESS")
+DATABASE = os.environ.get("DATABASE")
+
+if DATABASE_USERNAME is None:
+    print("DATABASE_USERNAME está faltando")
+    exit(1)
+
+if DATABASE_PASSWORD is None:
+    print("DATABASE_PASSWORD está faltando")
+    exit(1)
+
+if DATABASE_ADDRESS is None:
+    print("DATABASE_ADDRESS está faltando")
+    exit(1)
+
+if DATABASE is None:
+    print("DATABASE está faltando")
+    exit(1)
+
+ENGINE = create_engine(f"mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_ADDRESS}:3306/{DATABASE}")
 
 
 def criar_sessao():

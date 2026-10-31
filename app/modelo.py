@@ -1,11 +1,14 @@
-""" Modelos da aplicação de tarefas """
+"""Modelos da aplicação de tarefas"""
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
 
 class Tarefa(BaseModel):
-    id: int
+    """Modelo de tarefa"""
+
+    id: int = Field(alias="_id")
     titulo: str
     descricao: Optional[str] = None
     concluida: bool = False
@@ -13,6 +16,14 @@ class Tarefa(BaseModel):
     data_conclusao: Optional[datetime] = None
 
     def finalizar(self):
-        """ Método para finalizar tarefa """
+        """Método para finalizar tarefa"""
         self.concluida = True
-        self.data_conclusao = datetime.now().isoformat(timespec='seconds')
+        self.data_conclusao = datetime.now().isoformat(timespec="seconds")
+
+    def resumir(self):
+        """Resume tarefa em `id: titulo`"""
+        return {self.id: self.titulo}
+
+    def get_id(self):
+        """Retorna ID da tarefa"""
+        return self.id

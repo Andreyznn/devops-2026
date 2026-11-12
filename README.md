@@ -24,7 +24,6 @@ A documentação interativa (Swagger) fica disponível em `/docs`.
 
 ## Estrutura do projeto
 
-```
 devops-2026/
 ├── app/
 │   ├── __init__.py
@@ -39,7 +38,6 @@ devops-2026/
 │   └── python-app.yml      # Pipeline de CI/CD
 ├── Dockerfile
 └── requirements.txt
-```
 
 ## Execução local
 
@@ -151,3 +149,4 @@ A pipeline, definida em `.github/workflows/python-app.yml`, é executada a cada 
 - **GitHub Actions**: pipeline de integração e entrega contínuas
 - **Docker Hub**: registro da imagem publicada
 - **Render**: hospedagem da aplicação e do banco em nuvem
+
